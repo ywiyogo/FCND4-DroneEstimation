@@ -57,6 +57,7 @@ public:
   void Update(VectorXf& z, MatrixXf& H, MatrixXf& R, VectorXf& zFromX);
 
   // EKF state and covariance
+  // YW: ekfstate has 7 variables: x,y,z, x_dot, y_dot, z_dot, yaw
 	VectorXf ekfState;
 	MatrixXf ekfCov;
 

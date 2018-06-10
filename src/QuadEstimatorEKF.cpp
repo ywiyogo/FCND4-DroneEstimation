@@ -170,7 +170,19 @@ VectorXf QuadEstimatorEKF::PredictState(VectorXf curState, float dt, V3F accel, 
   Quaternion<float> attitude = Quaternion<float>::FromEuler123_RPY(rollEst, pitchEst, curState(6));
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
+  predictedState(0) = predictedState(0) + curState(3) * dt;
+  predictedState(1) = predictedState(1) + curState(4) * dt;
+  predictedState(2) = predictedState(2) + curState(5) * dt;
 
+  // find the global acceleration to predict the next velocity value
+  V3F accel_global = attitude.Rotate_BtoI(accel);
+  accel_global.z -= static_cast<float>(CONST_GRAVITY);
+
+  predictedState(3) = predictedState(3) + accel_global.x * dt;
+  predictedState(4) = predictedState(4) + accel_global.y * dt;
+  predictedState(5) = predictedState(5) - accel_global.z * dt;
+
+  // no update of yaw due to the above hint: the yaw integral is already done in the IMU update.
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
@@ -243,7 +255,11 @@ void QuadEstimatorEKF::Predict(float dt, V3F accel, V3F gyro)
   gPrime.setIdentity();
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
-
+  // Prediction steps
+// 1. define a transition function and calculate the prediction: \bar{\mu}_t = g(u_t, \mu_{t-1})
+// 2. calculate the derivative of the transition function: G_t = g'(u_t, x_t, \Delta t)
+// 3. Calculate the covariance: \bar{\Sigma}_t = G_t\Sigma_{t-1}G_t^T + Q_t
+// 4. return the prediction vector and the covariance: \bar{\mu}_t, \bar{\Sigma}_t
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 

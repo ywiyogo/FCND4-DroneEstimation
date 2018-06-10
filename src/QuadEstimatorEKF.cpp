@@ -209,7 +209,16 @@ MatrixXf QuadEstimatorEKF::GetRbgPrime(float roll, float pitch, float yaw)
   //   that your calculations are reasonable
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
+  // Equation 52 from https://www.overleaf.com/read/vymfngphcccj#/54894644/
+  // theta: pitch; phi: roll; psi: yaw;
 
+  RbgPrime(0, 0) = -cos(pitch) * sin(yaw);
+  RbgPrime(0, 1) = -sin(roll) * sin(pitch) * sin(yaw) - cos(roll) * cos(yaw);
+  RbgPrime(0, 2) = -cos(roll) * sin(pitch) * sin(yaw) + sin(roll) * cos(yaw);
+
+  RbgPrime(1, 0) = cos(pitch) * cos(yaw);
+  RbgPrime(1, 1) = sin(roll) * sin(pitch) * cos(yaw) - cos(roll) * sin(yaw);
+  RbgPrime(1, 2) = cos(roll) * sin(pitch) * cos(yaw) + sin(roll) * sin(yaw);
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
@@ -218,7 +227,7 @@ MatrixXf QuadEstimatorEKF::GetRbgPrime(float roll, float pitch, float yaw)
 
 void QuadEstimatorEKF::Predict(float dt, V3F accel, V3F gyro)
 {
-  // predict the state forward
+  // 1. predict the state forward: \bar{\mu}_t = g(u_t, \mu_{t-1})
   VectorXf newState = PredictState(ekfState, dt, accel, gyro);
 
   // Predict the current covariance forward by dt using the current accelerations and body rates as input.
@@ -255,11 +264,19 @@ void QuadEstimatorEKF::Predict(float dt, V3F accel, V3F gyro)
   gPrime.setIdentity();
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
-  // Prediction steps
-// 1. define a transition function and calculate the prediction: \bar{\mu}_t = g(u_t, \mu_{t-1})
-// 2. calculate the derivative of the transition function: G_t = g'(u_t, x_t, \Delta t)
-// 3. Calculate the covariance: \bar{\Sigma}_t = G_t\Sigma_{t-1}G_t^T + Q_t
-// 4. return the prediction vector and the covariance: \bar{\mu}_t, \bar{\Sigma}_t
+  // 2. calculate the derivative of the transition function: G_t = g'(u_t, x_t, \Delta t) -> eq. 51
+  gPrime(0,3) = dt;
+  gPrime(1,4) = dt;
+  gPrime(2,5) = dt;
+
+  gPrime(3, 6) = (RbgPrime(0) * accel).sum() * dt;
+  gPrime(4, 6) = (RbgPrime(1) * accel).sum() * dt;
+  gPrime(5, 6) = (RbgPrime(2) * accel).sum() * dt;
+
+  // 3. Calculate the covariance: \bar{\Sigma}_t = G_t\Sigma_{t-1}G_t^T + Q_t
+  MatrixXf term1 = gPrime * ekfCov;
+  gPrime.transposeInPlace();
+  ekfCov = term1 * gPrime + Q;
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 

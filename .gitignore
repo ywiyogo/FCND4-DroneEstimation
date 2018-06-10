@@ -16,6 +16,9 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
-
+build-CPPSim*/
 # Visual Studio 2015/2017 cache/options directory
 .vs/
+
+# QTCreator
+project/CPPSim.pro.user

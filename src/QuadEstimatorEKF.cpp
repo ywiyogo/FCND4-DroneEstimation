@@ -107,8 +107,8 @@ void QuadEstimatorEKF::UpdateFromIMU(V3F accel, V3F gyro)
 //  ekfState(6) = ekfState(6) + dtIMU * gyro.z;	// yaw
 
   // normalize yaw to -pi .. pi
-  if (ekfState(6) > F_PI) ekfState(6) -= 2.f*F_PI;
-  if (ekfState(6) < -F_PI) ekfState(6) += 2.f*F_PI;
+  if (ekfState(6) > F_PI) ekfState(6) -= 2.f * F_PI;
+  if (ekfState(6) < -F_PI) ekfState(6) += 2.f * F_PI;
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
@@ -301,6 +301,18 @@ void QuadEstimatorEKF::UpdateFromGPS(V3F pos, V3F vel)
   //  - The GPS measurement covariance is available in member variable R_GPS
   //  - this is a very simple update
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
+  hPrime(0,0) = 1.;
+  hPrime(1,1) = 1.;
+  hPrime(2,2) = 1.;
+  hPrime(3,3) = 1.;
+  hPrime(4,4) = 1.;
+  hPrime(5,5) = 1.;
+
+  // Assign the EKF state to zFromX without the yaw
+  for(auto idx = 0; idx < 6; idx++)
+  {
+    zFromX(idx) = ekfState(idx);
+  }
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
@@ -322,18 +334,18 @@ void QuadEstimatorEKF::UpdateFromMag(float magYaw)
   //    (you don't want to update your yaw the long way around the circle)
   //  - The magnetomer measurement covariance is available in member variable R_Mag
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
-  hPrime(0,6) = 1;  //eq. 58
+  hPrime(0,6) = 1.;  //eq. 58
 
   zFromX(0) = ekfState(6);
   float dyaw = z(0) - zFromX(0);
   // normalize the yaw angle
   if (dyaw > F_PI)
   {
-    zFromX(0) = zFromX(0) + 2.f*F_PI;
+    zFromX(0) = zFromX(0) + 2. * F_PI;
   }
   else if (dyaw < -F_PI)
   {
-    zFromX(0) = zFromX(0) - 2.f*F_PI;
+    zFromX(0) = zFromX(0) - 2. * F_PI;
   }
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 

@@ -102,10 +102,6 @@ void QuadEstimatorEKF::UpdateFromIMU(V3F accel, V3F gyro)
   float predictedRoll = attitude_quat.Roll();
   ekfState(6) = attitude_quat.Yaw();
 
-//  float predictedPitch = pitchEst + dtIMU * gyro.y;
-//  float predictedRoll = rollEst + dtIMU * gyro.x;
-//  ekfState(6) = ekfState(6) + dtIMU * gyro.z;	// yaw
-
   // normalize yaw to -pi .. pi
   if (ekfState(6) > F_PI) ekfState(6) -= 2.f * F_PI;
   if (ekfState(6) < -F_PI) ekfState(6) += 2.f * F_PI;

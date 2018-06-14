@@ -166,6 +166,7 @@ VectorXf QuadEstimatorEKF::PredictState(VectorXf curState, float dt, V3F accel, 
   Quaternion<float> attitude = Quaternion<float>::FromEuler123_RPY(rollEst, pitchEst, curState(6));
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
+  // calc the pose using the kinematic equation s_t = s_t-1 + v_t-1*dt
   predictedState(0) = predictedState(0) + curState(3) * dt;
   predictedState(1) = predictedState(1) + curState(4) * dt;
   predictedState(2) = predictedState(2) + curState(5) * dt;
@@ -173,7 +174,7 @@ VectorXf QuadEstimatorEKF::PredictState(VectorXf curState, float dt, V3F accel, 
   // find the global acceleration to predict the next velocity value
   V3F accel_global = attitude.Rotate_BtoI(accel);
   accel_global.z -= static_cast<float>(CONST_GRAVITY);
-
+  // calc the velocity using the kinematic equation v_t = v_t-1 + a_t-1*dt
   predictedState(3) = predictedState(3) + accel_global.x * dt;
   predictedState(4) = predictedState(4) + accel_global.y * dt;
   predictedState(5) = predictedState(5) - accel_global.z * dt;
@@ -297,6 +298,7 @@ void QuadEstimatorEKF::UpdateFromGPS(V3F pos, V3F vel)
   //  - The GPS measurement covariance is available in member variable R_GPS
   //  - this is a very simple update
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
+  // see Eq. 55 in Overleaf section 7.3.1 
   hPrime(0,0) = 1.;
   hPrime(1,1) = 1.;
   hPrime(2,2) = 1.;
@@ -334,6 +336,7 @@ void QuadEstimatorEKF::UpdateFromMag(float magYaw)
 
   zFromX(0) = ekfState(6);
   float dyaw = z(0) - zFromX(0);
+
   // normalize the yaw angle
   if (dyaw > F_PI)
   {

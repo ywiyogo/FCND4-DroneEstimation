@@ -27,7 +27,7 @@ In scenario 6, I have to calculate the standard deviation of the given GPS and a
 
 In this scenario, I need to implement the function `UpdateFromIMU()` which contains a complementary filter-type attitude filter. First, I take the Euler angles and convert them to quaternions to get the quadcopter representation in inertial frame. Then, I integrate the body rate from the gyro in the quaternions to get the updated pitch, roll, and yaw values.
 
-These are the implemented code section:
+Below is the implemented code section:
 
 ```
 void QuadEstimatorEKF::UpdateFromIMU(V3F accel, V3F gyro)
@@ -47,6 +47,9 @@ void QuadEstimatorEKF::UpdateFromIMU(V3F accel, V3F gyro)
   ...
 }
 ```
+
+The animation below shows how the implementation can pass the test where the estimate attitude error values are less than 0.1:
+
 ![scenario7][scenario7]
 
 ## Scenario 8: Prediction Step
@@ -72,7 +75,7 @@ Since the yaw integral is already done in the IMU update, I don't need to update
 
 Next, I implement the Eq. 52 for the partial derivative of the rotation matrix. Finally, I need to implement the Jacobian matrix from the Eq. 51 in the `Predict()` function.
 
-Below is the result of the simulation
+Below is the result of the implementation of the prediction step of the EKF:
 
 ![scenario8][scenario8]
 
@@ -82,6 +85,8 @@ In this scenario I need to tune the standard deviation of the noise covariance m
 
     QPosXYStd = .001
     QPosZStd = .05
+
+The thick white line is the visualization of the tuned covariance:
 
 ![scenario9][scenario9]
 
@@ -109,6 +114,7 @@ zFromX(0) = zFromX(0) - 2. * F_PI;
 }
 
 ```
+The animation below shows how the yaw error of the quadcopter is less than 0.12 for more than 10 seconds:
 
 ![scenario10][scenario10]
 
@@ -138,6 +144,7 @@ These are the implemented code in the function `void QuadEstimatorEKF::UpdateFro
   Update(z, hPrime, R_GPS, zFromX);
 ```
 
+The below animation is the final result after integrating my control from the previous project. Due to the high Kalman gain, the quadcopter experiences a short overshoot before changing the direction. I can decrese the `kpPosXY` and `kpVelXY` to get a smoother square trajectory. Nevertheless, we can see that the quadcopter pass the simulation since the estimation error is below 1:
 
 ![scenario11][scenario11]
 

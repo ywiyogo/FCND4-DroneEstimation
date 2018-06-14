@@ -9,7 +9,7 @@ So, if the control of a quadcopter exists, why do we bother about the estimator?
 1. to deal with the localization or the exact position of the quadcopter since without the estimator we will not get a reliable localization
 2. to deal with the sensor measurement values which taken from the quadcopter (GPS, Accelerometer, magnetometer). 
 
-A summary of the mathematical calculation of the EKF estimator can be found in [https://www.overleaf.com/read/vymfngphcccj#/54894644/](https://www.overleaf.com/read/vymfngphcccj#/54894644/).
+A summary handout of the mathematical calculation of the EKF estimator can be found in [https://www.overleaf.com/read/vymfngphcccj#/54894644/](https://www.overleaf.com/read/vymfngphcccj#/54894644/).
 
 ## Implementation Details
 
@@ -17,7 +17,7 @@ In addition to the previous project, Udacity added more 6 scenarios, where I can
 
 ### Scenario 6: Sensor Noise
 
-In scenario 6, I have to calculate the standard deviation of the given GPS and accelerometer sensor on the quadcopter. During the quadcopter stays on the air, the sensor values are recorded. For this scenario I wrote a Python script to calculate the standard deviation of the both sensors. The script is located in [config/task1.py](./config/task1.py). I utilize the Python csv and numpy libraries which have been provided in the Conda starter-kit. The results are:
+In scenario 6, I have to calculate the standard deviation of the given GPS and accelerometer sensor on the quadcopter. During the quadcopter stays on the air, the sensor values are recorded. For this scenario I wrote a Python script to calculate the standard deviation of the both sensors. The script is located in [config/task1.py](./config/task1.py). I utilize the Python `csv` and `numpy` libraries which have been provided in the Conda starter-kit. The results are:
 
     MeasuredStdDev_GPSPosXY = 0.71325
     MeasuredStdDev_AccelXY = 0.497225
@@ -25,7 +25,7 @@ In scenario 6, I have to calculate the standard deviation of the given GPS and a
 
 ## Scenario 7: Attitude Estimation
 
-In this scenario, I need to implement the function `UpdateFromIMU()` which contains a complementary filter-type attitude filter. First, I take the Euler angles and convert them to quartenions to get the quadcopter representation in intertial frame. Then, I integrate the body rate from the gyro in the quartenions to get the updated pitch, roll, and yaw values.
+In this scenario, I need to implement the function `UpdateFromIMU()` which contains a complementary filter-type attitude filter. First, I take the Euler angles and convert them to quaternions to get the quadcopter representation in inertial frame. Then, I integrate the body rate from the gyro in the quaternions to get the updated pitch, roll, and yaw values.
 
 These are the implemented code section:
 
@@ -70,7 +70,7 @@ The transitional function calculate the first six states which are the pose and 
 ```
 Since the yaw integral is already done in the IMU update, I don't need to update the yaw again.
 
-Next, I implement the Eq. 52 for the the partial derivative of the rotation matrix. Finally, I need to implement the Jacobian matrix from the Eq. 51 in the `Predict()` function.
+Next, I implement the Eq. 52 for the partial derivative of the rotation matrix. Finally, I need to implement the Jacobian matrix from the Eq. 51 in the `Predict()` function.
 
 Below is the result of the simulation
 
@@ -91,7 +91,7 @@ From the initial scenario, we can see that the estimate yaw is drifting away fro
 
 ![drift][drift]
 
-In order to avoid this drift, we need to update the yaw from the magnetometer measurement value. The section 7.3.2 of the mention summary provides the mathematical formula to implement the manetometer. Based on the Eq. 56, 57, 58, I implement those equations like below:
+In order to avoid this drift, we need to update the yaw from the magnetometer measurement value. The section 7.3.2 of the mention summary provides the mathematical formula to implement the magnetometer. Based on the Eq. 56, 57, 58, I implement those equations like below:
 
 ```
 hPrime(0,6) = 1.;  //eq. 58
@@ -116,7 +116,7 @@ zFromX(0) = zFromX(0) - 2. * F_PI;
 
 ## Scenario 11 GPS Update with Custom Controller
 
-This scenario allows me to test the localization with the GPS update, which is described in the setion 7.3.1 of [the summary handout](https://www.overleaf.com/read/vymfngphcccj#/54894644/). In the code, I implement the partial derivative of the measurement model `h(x)`, called `hPrime`. `hPrime` is a 6x7 matrix which contains 5x5 identity matrix.
+This scenario allows me to test the localization with the GPS update, which is described in the section 7.3.1 of [the summary handout](https://www.overleaf.com/read/vymfngphcccj#/54894644/). In the code, I implement the partial derivative of the measurement model `h(x)`, called `hPrime`. `hPrime` is a 6x7 matrix which contains 5x5 identity matrix.
 
 These are the implemented code in the function `void QuadEstimatorEKF::UpdateFromGPS(V3F pos, V3F vel)`:
 

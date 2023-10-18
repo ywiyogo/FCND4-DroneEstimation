@@ -22,3 +22,5 @@ build-CPPSim*/
 
 # QTCreator
 project/CPPSim.pro.user
+
+build/
